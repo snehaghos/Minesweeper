@@ -1,0 +1,103 @@
+/* General container styling */
+.minesweeper-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* Game board styling */
+  .minesweeper-board {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(30px, 1fr));
+    grid-template-rows: repeat(8, minmax(30px, 1fr));
+    gap: 2px;
+    background-color: #222;
+    padding: 5px;
+    border-radius: 10px;
+  }
+  
+  /* Individual cell styling */
+  .minesweeper-cell {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: 1px solid #444;
+    background-color: #ddd;
+    cursor: pointer;
+  }
+  
+  .minesweeper-cell.revealed {
+    background-color: #bbb;
+  }
+  
+  /* Game-over styling */
+  .minesweeper-game-over {
+    color: red;
+    font-size: 2em;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+  
+  @media (max-width: 600px) {
+    .minesweeper-board {
+      grid-template-columns: repeat(8, minmax(25px, 1fr));
+      grid-template-rows: repeat(8, minmax(25px, 1fr));
+    }
+  
+    .minesweeper-cell {
+      width: 30px;
+      height: 30px;
+      font-size: 1em;
+    }
+  
+    .minesweeper-game-over {
+      font-size: 1.5em;
+    }
+ 
+        .blankbox {
+          font-size: 18px; 
+        }
+      
+        .numberbox {
+          font-size: 20px;
+        }
+      
+        .text-2xl {
+          font-size: 1.5rem; 
+        }
+      
+      
+  }
+  @keyframes explode {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.5);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+  
+  .mine-blast {
+    animation: explode 0.5s ease-out forwards;
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 0, 0, 0.6);
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+  }
+  
