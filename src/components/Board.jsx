@@ -9,7 +9,7 @@ const Board = ({ board, revealed, handleClick, handleRightClick }) => {
             key={`${rowIndex}-${colIndex}`}
             onClick={() => handleClick(rowIndex, colIndex)}
             onContextMenu={(e) => handleRightClick(e, rowIndex, colIndex)}
-            className={`w-12 h-12 sm:w-14 sm:h-14 border border-gray-400 flex items-center justify-center text-lg font-bold transition-all duration-300 ease-in-out ${
+            className={`w-10 h-10 sm:w-14 sm:h-14 border border-gray-400 flex items-center justify-center text-lg font-bold transition-all duration-300 ease-in-out ${
               revealed[rowIndex][colIndex]
                 ? cell.isMine
                   ? "text-white"

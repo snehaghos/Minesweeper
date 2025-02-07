@@ -17,7 +17,8 @@ const MineCount = 10;
 const chcDirection = [
   [-1, -1], [-1, 0], [-1, 1],
   [0, -1], [0, 1],
-  [1, -1], [1, 0], [1, 1],
+  [1, -1], [1, 0],
+  [1, 1],
 ];
 
 function emptyBoard() {
@@ -32,12 +33,12 @@ function emptyBoard() {
   return board;
 }
 
-function minePlacing(board) {
+function minePlacing(board, firstClickRow, firstClickCol) {
   let count = 0;
   while (count < MineCount) {
     let row = Math.floor(Math.random() * BoardSize);
     let col = Math.floor(Math.random() * BoardSize);
-    if (!board[row][col].isMine) {
+    if (!board[row][col].isMine && (row !== firstClickRow || col !== firstClickCol)) {
       board[row][col].isMine = true;
       count++;
     }
@@ -66,9 +67,9 @@ function calcAdjaNum(board) {
   }
 }
 
-function initializeBoard() {
+function initializeBoard(firstClickRow, firstClickCol) {
   let board = emptyBoard();
-  minePlacing(board);
+  minePlacing(board, firstClickRow, firstClickCol);
   calcAdjaNum(board);
   return board;
 }
@@ -83,7 +84,6 @@ const Minesweeper = () => {
     Array.from({ length: BoardSize }, () => Array(BoardSize).fill(false))
   );
   const [isGameOver, setIsGameOver] = useState(false);
-
   const [showInstructions, setShowInstructions] = useState(false);
   const [timer, setTimer] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -127,16 +127,15 @@ const Minesweeper = () => {
     let newRevealed = [...revealed];
 
     if (firstClick) {
-      // first click does not hit a mine
-      do {
-        newBoard = initializeBoard();
-      } while (newBoard[row][col].isMine || newBoard[row][col].count !== 0);
+      // first click does not hit a mine and has zero adjacent mines
+      newBoard = initializeBoard(row, col);
 
       setBoard(newBoard);
       setFirstClick(false);
 
       setTimeout(() => {
         let updatedRevealed = [...newRevealed];
+        floodFill(row, col, updatedRevealed, newBoard); // Ensure the first click reveals cells
         setRevealed(updatedRevealed);
       }, 0);
 
@@ -153,7 +152,7 @@ const Minesweeper = () => {
         setIsGameOver(true);
       }, 1500);
     } else {
-      floodFill(row, col, newRevealed);
+      floodFill(row, col, newRevealed, newBoard);
       setRevealed(newRevealed);
       setPoints(points + 5);
       winCond(newRevealed);
@@ -174,7 +173,7 @@ const Minesweeper = () => {
     setBoard(newBoard);
   }
 
-  function floodFill(row, col, newRevealed) {
+  function floodFill(row, col, newRevealed, newBoard) {
     let queue = [[row, col]];
     while (queue.length > 0) {
       let [r, c] = queue.shift();
@@ -182,7 +181,7 @@ const Minesweeper = () => {
         r < 0 || r >= BoardSize ||
         c < 0 || c >= BoardSize ||
         newRevealed[r][c] ||
-        board[r][c].isMine
+        newBoard[r][c].isMine
       ) {
         continue;
       }
@@ -190,7 +189,7 @@ const Minesweeper = () => {
       newRevealed[r][c] = true;
       setPoints(points => points + 5);
 
-      if (board[r][c].count === 0) {
+      if (newBoard[r][c].count === 0) {
         for (let [dx, dy] of chcDirection) {
           queue.push([r + dx, c + dy]);
         }
@@ -215,7 +214,7 @@ const Minesweeper = () => {
   }
 
   function handleRestart() {
-    setBoard(initializeBoard());
+    setBoard(emptyBoard());
     setTimer(0);
     setIsTimerRunning(false);
     setRevealed(Array.from({ length: BoardSize }, () => Array(BoardSize).fill(false)));
